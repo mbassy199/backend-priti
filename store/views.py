@@ -21,6 +21,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 # Serializers
 from userauths.serializer import MyTokenObtainPairSerializer, RegisterSerializer
@@ -67,6 +68,11 @@ class BrandListView(generics.ListAPIView):
     queryset = Brand.objects.filter(active=True)
     permission_classes = (AllowAny,)
 
+class ProductPagination(PageNumberPagination):
+    page_size = 10  # Number of products per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100    
+
 class FeaturedProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(status="published", featured=True)[:3]
@@ -76,6 +82,7 @@ class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(status="published")
     permission_classes = (AllowAny,)
+    pagination_class = ProductPagination
 
 class ProductDetailView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
